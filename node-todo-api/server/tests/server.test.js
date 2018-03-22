@@ -60,12 +60,15 @@ describe("Server", () => {
 
         const firstTodo = {
             _id: firstTodoId,
-            text: "First test todo"
+            text: "First test todo",
+            completed: false
         };
 
         const secondTodo = {
             _id: secondTodoId,
-            text: "Second test todo"
+            text: "Second test todo",
+            completed: true,
+            completedAt: 333
         };
 
         const todos = [firstTodo, secondTodo];
@@ -153,6 +156,52 @@ describe("Server", () => {
                 request(app)
                     .delete(`/todos/{}}`)
                     .expect(400)
+                    .end(done);
+            });
+        });
+
+        describe("PATCH /todos/:id", () => {
+            it("should update todo correctly when setting complete to true", (done) => {
+                const hexId = firstTodoId.toHexString();
+
+                const expectedText = "Test text";
+                const patchBody = {
+                    text: expectedText,
+                    completed: true
+                };
+
+                request(app)
+                    .patch(`/todos/${hexId}`)
+                    .send(patchBody)
+                    .expect(200)
+                    .expect(res => {
+                        const todo = res.body.todo;
+                        expect(todo.completed).toBe(true);
+                        expect(todo.text).toBe(expectedText);
+                        expect(typeof todo.completedAt).toBe("number");
+                    })
+                    .end(done);
+            });
+
+            it("should update todo correctly when setting completed to false", (done) => {
+                const hexId = secondTodoId.toHexString();
+
+                const expectedText = "Test text";
+                const patchBody = {
+                    text: expectedText,
+                    completed: false
+                };
+
+                request(app)
+                    .patch(`/todos/${hexId}`)
+                    .send(patchBody)
+                    .expect(200)
+                    .expect(res => {
+                        const todo = res.body.todo;
+                        expect(todo.completed).toBe(false);
+                        expect(todo.text).toBe(expectedText);
+                        expect(todo.completedAt).toBe(null);
+                    })
                     .end(done);
             });
         });
