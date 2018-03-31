@@ -161,49 +161,51 @@ describe("Server", () => {
         });
 
         describe("PATCH /todos/:id", () => {
-            it("should update todo correctly when setting complete to true", (done) => {
-                const hexId = firstTodoId.toHexString();
+            it("should update todo correctly when setting complete to true"
+                , (done) => {
+                    const hexId = firstTodoId.toHexString();
 
-                const expectedText = "Test text";
-                const patchBody = {
-                    text: expectedText,
-                    completed: true
-                };
+                    const expectedText = "Test text";
+                    const patchBody = {
+                        text: expectedText,
+                        completed: true
+                    };
 
-                request(app)
-                    .patch(`/todos/${hexId}`)
-                    .send(patchBody)
-                    .expect(200)
-                    .expect(res => {
-                        const todo = res.body.todo;
-                        expect(todo.completed).toBe(true);
-                        expect(todo.text).toBe(expectedText);
-                        expect(typeof todo.completedAt).toBe("number");
-                    })
-                    .end(done);
-            });
+                    request(app)
+                        .patch(`/todos/${hexId}`)
+                        .send(patchBody)
+                        .expect(200)
+                        .expect(res => {
+                            const todo = res.body.todo;
+                            expect(todo.completed).toBe(true);
+                            expect(todo.text).toBe(expectedText);
+                            expect(typeof todo.completedAt).toBe("number");
+                        })
+                        .end(done);
+                });
 
-            it("should update todo correctly when setting completed to false", (done) => {
-                const hexId = secondTodoId.toHexString();
+            it("should update todo correctly when setting completed to false"
+                , (done) => {
+                    const hexId = secondTodoId.toHexString();
 
-                const expectedText = "Test text";
-                const patchBody = {
-                    text: expectedText,
-                    completed: false
-                };
+                    const expectedText = "Test text";
+                    const patchBody = {
+                        text: expectedText,
+                        completed: false
+                    };
 
-                request(app)
-                    .patch(`/todos/${hexId}`)
-                    .send(patchBody)
-                    .expect(200)
-                    .expect(res => {
-                        const todo = res.body.todo;
-                        expect(todo.completed).toBe(false);
-                        expect(todo.text).toBe(expectedText);
-                        expect(todo.completedAt).toBe(null);
-                    })
-                    .end(done);
-            });
+                    request(app)
+                        .patch(`/todos/${hexId}`)
+                        .send(patchBody)
+                        .expect(200)
+                        .expect(res => {
+                            const todo = res.body.todo;
+                            expect(todo.completed).toBe(false);
+                            expect(todo.text).toBe(expectedText);
+                            expect(todo.completedAt).toBe(null);
+                        })
+                        .end(done);
+                });
         });
     });
 });
