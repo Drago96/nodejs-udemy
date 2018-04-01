@@ -1,3 +1,5 @@
+process.env.NODE_ENV = "test";
+
 const expect = require("expect");
 const request = require("supertest");
 const { ObjectID } = require("mongodb");
