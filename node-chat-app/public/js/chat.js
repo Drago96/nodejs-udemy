@@ -1,11 +1,46 @@
 const socket = io();
 
+function scrollToBottom() {
+    const messages = $("#messages");
+
+    const newMessage = messages.children("li:last-child");
+
+    const clientHeight = messages.prop("clientHeight");
+    const scrollTop = messages.prop("scrollTop");
+    const scrollHeight = messages.prop("scrollHeight");
+    const newMessageHeight = newMessage.innerHeight();
+    const lastMessageHeight = newMessage.prev().innerHeight();
+
+    if (clientHeight + scrollTop + newMessageHeight + lastMessageHeight >= scrollHeight) {
+        messages.scrollTop(scrollHeight);
+    }
+}
+
 socket.on("connect", () => {
     console.log("Connected to server");
+    const params = $.deparam(window.location.search);
+    socket.emit("join", params, function (err) {
+        if (err) {
+            alert(err);
+            window.location.href = "/";
+        } else {
+            console.log("No error");
+        }
+    });
 });
 
 socket.on("disconnect", () => {
     console.log("Disconnected from server");
+});
+
+socket.on("updateUserList", (users) => {
+    const ol = $("<ol>");
+
+    users.forEach((user) => {
+        ol.append($("<li>").text(user));
+    });
+
+    $("#users").html(ol);
 });
 
 socket.on("newMessage", (message) => {
@@ -19,6 +54,7 @@ socket.on("newMessage", (message) => {
     });
 
     $("#messages").append(html);
+    scrollToBottom();
 });
 
 socket.on("newLocationMessage", (message) => {
@@ -32,15 +68,8 @@ socket.on("newLocationMessage", (message) => {
     });
 
     $("#messages").append(html);
+    scrollToBottom();
 });
-
-// socket.emit("createMessage", {
-//     from: "Me",
-//     text: "Hi"
-// }, function (message) {
-//     console.log("Message arrived");
-//     console.log(message);
-// });
 
 $("#message-form").submit((e) => {
     e.preventDefault();
@@ -53,7 +82,6 @@ $("#message-form").submit((e) => {
     }
 
     socket.emit("createMessage", {
-        from: "User",
         text: message
     }, function () {
         messageTextBox.val("");
