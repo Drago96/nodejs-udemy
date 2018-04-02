@@ -9,6 +9,27 @@ socket.on("disconnect", () => {
 });
 
 socket.on("newMessage", (message) => {
-    console.log(message);
+    const li = $("<li>");
+    li.text(`${message.from}: ${message.text}`);
+
+    $("#messages").append(li);
 });
 
+// socket.emit("createMessage", {
+//     from: "Me",
+//     text: "Hi"
+// }, function (message) {
+//     console.log("Message arrived");
+//     console.log(message);
+// });
+
+$("#message-form").submit((e) => {
+    e.preventDefault();
+
+    socket.emit("createMessage", {
+        from: "User",
+        text: $("input[name=message]").val()
+    }, function () {
+
+    });
+});
